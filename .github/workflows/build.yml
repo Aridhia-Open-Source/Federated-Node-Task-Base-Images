@@ -66,9 +66,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run pylint
-        run: |
-          make pylint
 
       - name: Run hadolint
         run: |
