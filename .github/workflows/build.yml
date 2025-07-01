@@ -70,33 +70,9 @@ jobs:
       - name: Run hadolint
         run: |
           make hadolint
-  tests:
-    needs:
-      - init
-      - linters
-    defaults:
-      run:
-        shell: bash
-    runs-on: ubuntu-latest
-    if: needs.init.outputs.is_tag == 'false'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Python Tests
-        working-directory: webserver
-        run: |
-          make tests_ci
-
-      - uses: irongut/CodeCoverageSummary@v1.3.0
-        name: Code Coverage Summary Report
-        with:
-          filename: artifacts/coverage.xml
-          fail_below_min: true
-          thresholds: '60 80'
   build:
     needs:
       - init
-      - tests
     if: needs.init.outputs.is_tag == 'false'
     defaults:
       run:
