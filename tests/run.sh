@@ -2,7 +2,7 @@
 
 set -e
 
-TAG=$(cat .version)
+TAG=${TAG:-$(cat .version)}
 export TAG
 docker compose -f tests/docker-compose.yaml up --abort-on-container-exit --exit-code-from analytics
 ec=$?

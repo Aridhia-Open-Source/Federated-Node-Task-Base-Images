@@ -114,8 +114,9 @@ jobs:
           tags: ${{ vars.DOCKER_CR }}/${{ env.OWNER_LC }}/r-base:${{ needs.init.outputs.tag }}
           push: true
       - name: Run Tests
+        env:
+          TAG: ${{ needs.init.outputs.tag }}
         run: |
-          echo "${{ needs.init.outputs.tag }}" > .version
           ./tests/run.sh
   sumamry:
     needs:
