@@ -51,18 +51,13 @@ jobs:
           echo "IS_TAG=${{ env.IS_TAG }}" >> ${GITHUB_OUTPUT}
           echo "DEV_BUILD=${{ env.DEV_BUILD }}" >> ${GITHUB_OUTPUT}
 
-          echo "Setting version according to the Chart.yaml"
-          cd k8s/federated-node
-
-          version=$(grep '^version:.*' Chart.yaml | sed 's/^.*: //')
-          echo "Chart version: ${version}"
-          appVersion=$(grep '^appVersion:.*' Chart.yaml | sed 's/^.*: \"//'| sed 's/\"//')
-          echo "Chart appVersion: ${appVersion}"
+          version=$(cat .version')
+          echo "Tag: ${version}"
 
           if [[ "${{ env.DEV_BUILD }}" == "false" ]]; then
-            echo "TAG=${appVersion}" >> ${GITHUB_OUTPUT}
+            echo "TAG=${version}" >> ${GITHUB_OUTPUT}
           else
-            echo "TAG=${appVersion}-v${GITHUB_SHA::6}" >> ${GITHUB_OUTPUT}
+            echo "TAG=${version}-v${GITHUB_SHA::6}" >> ${GITHUB_OUTPUT}
           fi
   linters:
     needs: init
