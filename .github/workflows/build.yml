@@ -115,6 +115,7 @@ jobs:
           push: true
       - name: Run Tests
         run: |
+          echo "${{ needs.init.outputs.tag }}" > .version
           ./tests/run.sh
   sumamry:
     needs:
