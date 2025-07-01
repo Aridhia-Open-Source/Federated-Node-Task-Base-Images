@@ -2,9 +2,10 @@ FROM python:3.13-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# hadolint ignore=DL3013,DL3008
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
         curl \
         unixodbc \
         unixodbc-dev \
@@ -17,17 +18,23 @@ RUN apt-get update \
         libpq-dev \
         wget \
         unzip \
-    && python3 -m pip install pyodbc
+    && python3 -m pip install --no-cache-dir pyodbc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # MS SQL
-RUN curl -sSL -O https://packages.microsoft.com/config/$(grep ^ID /etc/os-release | cut -d '=' -f 2)/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)/packages-microsoft-prod.deb \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# hadolint ignore=DL3008
+RUN wget -q https://packages.microsoft.com/config/"$(grep ^ID /etc/os-release | cut -d '=' -f 2)"/"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)"/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
     && dpkg -i packages-microsoft-prod.deb \
     && rm packages-microsoft-prod.deb \
     && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # MySQL
-RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.3/mysql-connector-odbc_9.3.0-1debian12_amd64.deb -O mysql-connector.deb \
+RUN wget -q https://dev.mysql.com/get/Downloads/Connector-ODBC/9.3/mysql-connector-odbc_9.3.0-1debian12_amd64.deb -O mysql-connector.deb \
     && dpkg -i mysql-connector.deb \
     && rm mysql-connector.deb \
     && mkdir /usr/lib/odbc \
@@ -35,7 +42,7 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.3/mysql-connector-
     && ln -s /usr/lib/x86_64-linux-gnu/odbc/libmyodbc9a.so /usr/lib/odbc/libmyodbc9a.so
 
 # MariaDB
-RUN wget https://dlm.mariadb.com/4275229/Connectors/odbc/connector-odbc-3.2.6/mariadb-connector-odbc_3.2.6-1+maria~bookworm_amd64.deb -O maria-connector.deb \
+RUN wget -q https://dlm.mariadb.com/4275229/Connectors/odbc/connector-odbc-3.2.6/mariadb-connector-odbc_3.2.6-1+maria~bookworm_amd64.deb -O maria-connector.deb \
     && dpkg -i maria-connector.deb \
     && rm maria-connector.deb \
     && ln -s /usr/lib/x86_64-linux-gnu/libmaodbc.so /usr/lib/odbc/libmaodbc.so \
@@ -46,9 +53,9 @@ RUN wget https://dlm.mariadb.com/4275229/Connectors/odbc/connector-odbc-3.2.6/ma
 
 # Oracle drivers?
 WORKDIR /opt/oracle
-RUN wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip \
+RUN wget -q https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip \
     && unzip instantclient-basic-linuxx64.zip \
-    && wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-odbc-linuxx64.zip \
+    && wget -q https://download.oracle.com/otn_software/linux/instantclient/instantclient-odbc-linuxx64.zip \
     && unzip instantclient-odbc-linuxx64.zip -d odbc \
     && echo "[Oracle ODBC Driver]" >> /etc/odbcinst.ini \
     && echo "Description=OracleDB Connector/ODBC v.23.8" >> /etc/odbcinst.ini \
@@ -56,6 +63,6 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/instantcli
     && echo "UsageCount=1" >> /etc/odbcinst.ini \
     && echo "/opt/oracle/instantclient_23_8" | tee /etc/ld.so.conf.d/oracle.conf \
     && ldconfig \
-    && rm *.zip
+    && rm ./*.zip
 
 WORKDIR /
