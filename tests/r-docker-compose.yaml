@@ -1,0 +1,9 @@
+name: fn_base_test
+services:
+  analytics:
+    extends:
+      file: docker-compose.yaml
+      service: analytics
+    container_name: analytics-r
+    image: ghcr.io/aridhia-open-source/r-base:${TAG}
+    command: ["Rscript", "/app/app.R"]
