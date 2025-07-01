@@ -73,6 +73,7 @@ jobs:
   build:
     needs:
       - init
+      - linters
     if: needs.init.outputs.is_tag == 'false'
     defaults:
       run:
