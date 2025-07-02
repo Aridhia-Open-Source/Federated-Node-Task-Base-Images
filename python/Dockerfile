@@ -57,6 +57,7 @@ RUN wget -q https://download.oracle.com/otn_software/linux/instantclient/instant
     && unzip instantclient-basic-linuxx64.zip \
     && wget -q https://download.oracle.com/otn_software/linux/instantclient/instantclient-odbc-linuxx64.zip \
     && unzip instantclient-odbc-linuxx64.zip -d odbc \
+    && ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1 \
     && echo "[Oracle ODBC Driver]" >> /etc/odbcinst.ini \
     && echo "Description=OracleDB Connector/ODBC v.23.8" >> /etc/odbcinst.ini \
     && echo "DRIVER=/opt/oracle/odbc/instantclient_23_8/libsqora.so.23.1" >> /etc/odbcinst.ini \
