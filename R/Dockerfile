@@ -16,6 +16,7 @@ RUN apt-get update \
         libgtk-3-0 \
         libaio1t64 \
         libpq-dev \
+        krb5-user \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
