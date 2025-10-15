@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.13-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -18,6 +18,7 @@ RUN apt-get update \
         libpq-dev \
         wget \
         unzip \
+        krb5-user \
     && python3 -m pip install --no-cache-dir pyodbc \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
