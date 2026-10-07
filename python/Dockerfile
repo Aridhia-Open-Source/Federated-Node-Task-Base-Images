@@ -66,4 +66,20 @@ RUN wget -q https://download.oracle.com/otn_software/linux/instantclient/instant
     && ldconfig \
     && rm ./*.zip
 
+# DuckDB and SQLite, for file based datasets. The FN connects to them with
+# driver={DuckDB Driver} and driver={SQLite3}
+ARG DUCKDB_ODBC_VERSION=1.5.6.0
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libsqliteodbc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -q https://github.com/duckdb/duckdb-odbc/releases/download/v${DUCKDB_ODBC_VERSION}/duckdb_odbc-linux-amd64.zip -O duckdb-odbc.zip \
+    && unzip duckdb-odbc.zip -d /opt/duckdb \
+    && rm duckdb-odbc.zip \
+    && echo "[DuckDB Driver]" >> /etc/odbcinst.ini \
+    && echo "Description=DuckDB ODBC v.${DUCKDB_ODBC_VERSION}" >> /etc/odbcinst.ini \
+    && echo "DRIVER=/opt/duckdb/libduckdb_odbc.so" >> /etc/odbcinst.ini \
+    && echo "UsageCount=1" >> /etc/odbcinst.ini
+
 WORKDIR /

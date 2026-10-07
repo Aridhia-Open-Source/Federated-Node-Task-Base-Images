@@ -15,7 +15,7 @@ Both images can be found at `ghcr.io/aridhia-open-source/r-base` and `ghcr.io/ar
 ## How to use them
 In order to used them, start your Dockerfile as follows:
 ```Dockerfile
-FROM ghcr.io/aridhia-open-source/r-base:0.0.1
+FROM ghcr.io/aridhia-open-source/r-base:0.0.2
 ```
 make sure the tag is the correct one.
 
